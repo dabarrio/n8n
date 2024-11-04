@@ -16,11 +16,10 @@ services:
       - DB_POSTGRESDB_SCHEMA=public
       # COMENTAR EN DEV
       - N8N_HOST=n8n.davidbarrios.com.ar
-      - N8N_PORT=5678
       - N8N_PROTOCOL=https
-      - NODE_ENV=production
+      - N8N_PORT=443
       - WEBHOOK_URL=https://n8n.davidbarrios.com.ar/
-      - GENERIC_TIMEZONE=America/Argentina/Buenos_Aires
+      - NODE_ENV=production
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
