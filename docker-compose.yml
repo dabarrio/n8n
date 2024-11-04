@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    ports:
+      - "1425:5678"
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_DATABASE=n8n_database
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_USER=n8n_user
+      - DB_POSTGRESDB_PASSWORD=n8n_password
+      - DB_POSTGRESDB_SCHEMA=public
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - postgres
+    networks:
+      - n8n_network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=n8n_database
+      - POSTGRES_USER=n8n_user
+      - POSTGRES_PASSWORD=n8n_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - n8n_network
+    restart: unless-stopped
+
+  backup:
+    image: postgres:13
+    container_name: postgres_backup
+    depends_on:
+      - postgres
+    volumes:
+      - ./backups:/backups
+    entrypoint: /bin/sh -c "while true; do pg_dump -h postgres -U n8n_user n8n_database > /backups/backup_n8n_database_$(date +%Y-%m-%d_%H-%M-%S).sql; sleep 86400; done"
+    environment:
+      - PGPASSWORD=n8n_password
+    networks:
+      - n8n_network
+    restart: unless-stopped
+
+volumes:
+  n8n_data:
+  postgres_data:
+
+networks:
+  n8n_network:
