@@ -14,6 +14,11 @@ services:
       - DB_POSTGRESDB_USER=n8n_user
       - DB_POSTGRESDB_PASSWORD=n8n_password
       - DB_POSTGRESDB_SCHEMA=public
+      # COMENTAR EN DEV
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_TUNNEL_URL=https://n8n.davidbarrios.com.ar
+      - VUE_APP_URL_BASE_API=https://n8n.davidbarrios.com.ar
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
